@@ -36,8 +36,16 @@ app.post('/trello-webhook', async (req, res) => {
     const responseCard = await fetch(`${TRELLO_BASE_URL}/cards/${cardId}?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}`);
     const card = await responseCard.json();
 
+    // Usar regex para capturar o ID do Autor na descrição do card
     const regexAuthorId = /ID do Autor:\s*(\d+)/;
-    const authorId = regexAuthorId ? card.desc.match(regexAuthorId)[1] : null;
+    const authorIdMatch = card.desc.match(regexAuthorId);
+    const authorId = authorIdMatch ? authorIdMatch[1] : null;
+
+    if (authorId) {
+      console.log(`ID do Autor encontrado: ${authorId}`);
+    } else {
+      console.log('ID do Autor não encontrado na descrição.');
+    }
 
     if (listAfter === TRELLO_LIST_NAME_TO_WATCH) {
       const channel = await client.channels.fetch(DISCORD_CHANNEL_ID);
