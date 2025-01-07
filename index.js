@@ -24,14 +24,14 @@ app.post('/trello-webhook', async (req, res) => {
   const action = req.body.action;
 
   console.log(`ActionType: ${action.type}`)
+  console.log(`Movendo card: ${action.data.card.name}`);
+  console.log(`De: ${action.data.listBefore}`);
+  console.log(`Para: ${action.data.listAfter}`);
 
   if (action.type === 'updateCard' && action.data.listBefore && action.data.listAfter) {
     const cardName = action.data.card.name;
     const listBefore = action.data.listBefore.name;
     const listAfter = action.data.listAfter.name;
-    console.log(`Movendo card: ${cardName}`);
-    console.log(`De: ${listBefore}`);
-    console.log(`Para: ${listAfter}`);
     const cardId = action.data.card.id;
     const responseCard = await fetch(`${TRELLO_BASE_URL}/cards/${cardId}?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}`);
     const card = await responseCard.json();
