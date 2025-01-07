@@ -20,7 +20,7 @@ const LOW_PRIORITY_LABEL_ID = process.env.LOW_PRIORITY_LABEL_ID;
 const app = express();
 app.use(bodyParser.json());
 
-app.head('/trello-webhook', async (req, res) => {
+app.post('/trello-webhook', async (req, res) => {
   const action = req.body.action;
 
   if (action.type === 'updateCard' && action.data.listBefore && action.data.listAfter) {
@@ -40,6 +40,10 @@ app.head('/trello-webhook', async (req, res) => {
     }
   }
   res.status(200).send('OK');
+});
+
+app.head('/trello-webhook', (req, res) => {
+  res.status(200).send();
 });
 
 const PORT = process.env.PORT || 3000;
