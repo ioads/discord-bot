@@ -11,7 +11,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 const BOT_DISCORD_TOKEN = process.env.BOT_DISCORD_TOKEN;
 const TRELLO_API_KEY = process.env.TRELLO_API_KEY;
 const TRELLO_TOKEN = process.env.TRELLO_TOKEN;
-const TRELLO_BOARD_ID = process.env.TRELLO_BOARD_ID;
+const TRELLO_LIST_ID = process.env.TRELLO_LIST_ID;
 const TRELLO_BASE_URL = process.env.TRELLO_BASE_URL
 const HIGH_PRIORITY_LABEL_ID = process.env.HIGH_PRIORITY_LABEL_ID;
 const MEDIUM_PRIORITY_LABEL_ID = process.env.MEDIUM_PRIORITY_LABEL_ID;
@@ -22,7 +22,6 @@ app.use(bodyParser.json());
 
 app.post('/trello-webhook', async (req, res) => {
   const action = req.body.action;
-  console.log(action.data)
 
   if (action.type === 'updateCard' && action.data.listBefore && action.data.listAfter) {
     const cardName = action.data.card.name;
@@ -103,7 +102,7 @@ client.on('messageCreate', async message => {
 
       const labelPrioridade = dados.prioridade ? (LABELS[dados.prioridade] || LOW_PRIORITY_LABEL_ID) : null;
 
-      let url = `${TRELLO_BASE_URL}/cards?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}&idList=${TRELLO_BOARD_ID}&name=${encodeURIComponent(dados.titulo)}`;
+      let url = `${TRELLO_BASE_URL}/cards?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}&idList=${TRELLO_LIST_ID}&name=${encodeURIComponent(dados.titulo)}`;
 
       if (labelPrioridade) {
         url += `&idLabels=${labelPrioridade}`;
