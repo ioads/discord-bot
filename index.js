@@ -32,7 +32,7 @@ app.post('/trello-webhook', async (req, res) => {
     const card = await responseCard.json();
 
     const regexAuthorId = /ID do Autor:\s*(\d+)/;
-    const authorId = descricao.match(regexAuthorId);
+    const authorId = card.desc.match(regexAuthorId);
 
     if (listAfter === TRELLO_LIST_NAME_TO_WATCH) {
       const channel = await client.channels.fetch(DISCORD_CHANNEL_ID);
