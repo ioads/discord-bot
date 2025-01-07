@@ -26,12 +26,14 @@ app.post('/trello-webhook', async (req, res) => {
   const action = req.body.action;
 
   if (action.type === 'updateCard' && action.data.listBefore && action.data.listAfter) {
-    console.log(action.data)
     const cardName = action.data.card.name;
     const listBefore = action.data.listBefore.name;
     const listAfter = action.data.listAfter.name;
-    const cardDesc = action.data.card;
-    console.log(cardDesc)
+    const cardId = action.data.card.id;
+    const responseCard = await fetch(`${TRELLO_BASE_URL}/cards/${cardId}?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}`);
+    const card = await responseCard.json();
+
+    console.log(card);
 
     if (listAfter === TRELLO_LIST_NAME_TO_WATCH) {
       const channel = await client.channels.fetch(DISCORD_CHANNEL_ID);
