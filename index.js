@@ -8,7 +8,7 @@ dotenv.config();
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
-const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
+const BOT_DISCORD_TOKEN = process.env.BOT_DISCORD_TOKEN;
 const TRELLO_API_KEY = process.env.TRELLO_API_KEY;
 const TRELLO_TOKEN = process.env.TRELLO_TOKEN;
 const TRELLO_BOARD_ID = process.env.TRELLO_BOARD_ID;
@@ -20,6 +20,8 @@ const LOW_PRIORITY_LABEL_ID = process.env.LOW_PRIORITY_LABEL_ID;
 const app = express();
 app.use(bodyParser.json());
 
+// <@${authorId}>
+
 app.post('/trello-webhook', async (req, res) => {
   const action = req.body.action;
 
@@ -27,6 +29,8 @@ app.post('/trello-webhook', async (req, res) => {
     const cardName = action.data.card.name;
     const listBefore = action.data.listBefore.name;
     const listAfter = action.data.listAfter.name;
+    const cardDesc = action.data.card;
+    console.log(cardDesc)
 
     if (listAfter === TRELLO_LIST_NAME_TO_WATCH) {
       const channel = await client.channels.fetch(DISCORD_CHANNEL_ID);
@@ -60,6 +64,8 @@ client.once('ready', () => {
 
 client.on('messageCreate', async message => {
   if (message.content.startsWith('!chamado')) {
+    const authorId = message.author.id;
+    console.log(authorId)
     const msgContent = message.content.trim();
 
     const regex = /!chamado\nTITULO:\s*(.*?)\nDESCRICAO:\s*(.*?)\n(?:ID:\s*(.*?)\n)?(?:PRIORIDADE:\s*(.*))?/;
@@ -101,9 +107,9 @@ client.on('messageCreate', async message => {
       }
 
       if (dados.id_cliente_ou_operacao) {
-        url += `&desc=${encodeURIComponent(dados.descricao)}%0A%0AID: ${dados.id_cliente_ou_operacao}`;
+        url += `&desc=${encodeURIComponent(dados.descricao)}%0A%0AID: ${dados.id_cliente_ou_operacao}%0A%0AID do Autor: ${authorId}`;
       } else {
-        url += `&desc=${encodeURIComponent(dados.descricao)}`;
+        url += `&desc=${encodeURIComponent(dados.descricao)}%0A%0AID do Autor: ${authorId}`;
       }
 
       try {
@@ -112,7 +118,7 @@ client.on('messageCreate', async message => {
         if (response.ok) {
           const card = await response.json();
 
-          message.channel.send(`Chamado "${dados.titulo}" criado com sucesso! ID do chamado: ${card.id}`);
+          message.channel.send(`Chamado "${dados.titulo}" criado com sucesso!\n\nID do chamado: ${card.id}`);
 
           for (let i = 0; i < attachmentUrls.length; i++) {
             const imageUrl = attachmentUrls[i];
@@ -152,4 +158,4 @@ client.on('messageCreate', async message => {
 });
 
 
-client.login(DISCORD_TOKEN);
+client.login(BOT_DISCORD_TOKEN);
