@@ -22,15 +22,8 @@ app.use(bodyParser.json());
 
 app.post('/trello-webhook', async (req, res) => {
   const action = req.body.action;
-  console.log(`ActionType: ${action.type}`)
 
-  if(action.type !== 'createCard') {
-    console.log(`Movendo card: ${action.data.card.name}`);
-    console.log(`De: ${action.data.listBefore.name}`);
-    console.log(`Para: ${action.data.listAfter.name}`);
-  }
-
-  if (action.type === 'updateCard' && action.data.listBefore && action.data.listAfter) {
+  if (action.type === 'updateCard') {
     const cardName = action.data.card.name;
     const listBefore = action.data.listBefore.name;
     const listAfter = action.data.listAfter.name;
@@ -38,7 +31,6 @@ app.post('/trello-webhook', async (req, res) => {
     const responseCard = await fetch(`${TRELLO_BASE_URL}/cards/${cardId}?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}`);
     const card = await responseCard.json();
 
-    // Usar regex para capturar o ID do Autor na descrição do card
     const regexAuthorId = /ID do Autor:\s*(\d+)/;
     const authorIdMatch = card.desc.match(regexAuthorId);
     const authorId = authorIdMatch ? authorIdMatch[1] : null;
