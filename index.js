@@ -20,8 +20,6 @@ const LOW_PRIORITY_LABEL_ID = process.env.LOW_PRIORITY_LABEL_ID;
 const app = express();
 app.use(bodyParser.json());
 
-// <@${authorId}>
-
 app.post('/trello-webhook', async (req, res) => {
   const action = req.body.action;
 
@@ -33,13 +31,14 @@ app.post('/trello-webhook', async (req, res) => {
     const responseCard = await fetch(`${TRELLO_BASE_URL}/cards/${cardId}?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}`);
     const card = await responseCard.json();
 
-    console.log(card);
+    const regexAuthorId = /ID do Autor:\s*(\d+)/;
+    const authorId = descricao.match(regexAuthorId);
 
     if (listAfter === TRELLO_LIST_NAME_TO_WATCH) {
       const channel = await client.channels.fetch(DISCORD_CHANNEL_ID);
 
       if (channel) {
-        channel.send(`O card "${cardName}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
+        channel.send(`<@${authorId}>\n\nO card "${cardName}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
         console.log(`Mensagem enviada para o Discord: O card "${cardName}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
       } else {
         console.error('Canal do Discord não encontrado!');
@@ -68,7 +67,6 @@ client.once('ready', () => {
 client.on('messageCreate', async message => {
   if (message.content.startsWith('!chamado')) {
     const authorId = message.author.id;
-    console.log(authorId)
     const msgContent = message.content.trim();
 
     const regex = /!chamado\nTITULO:\s*(.*?)\nDESCRICAO:\s*(.*?)\n(?:ID:\s*(.*?)\n)?(?:PRIORIDADE:\s*(.*))?/;
