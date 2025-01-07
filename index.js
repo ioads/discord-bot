@@ -26,6 +26,7 @@ app.post('/trello-webhook', async (req, res) => {
   const action = req.body.action;
 
   if (action.type === 'updateCard' && action.data.listBefore && action.data.listAfter) {
+    console.log(action.data)
     const cardName = action.data.card.name;
     const listBefore = action.data.listBefore.name;
     const listAfter = action.data.listAfter.name;
