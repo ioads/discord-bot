@@ -22,13 +22,13 @@ app.use(bodyParser.json());
 
 app.post('/trello-webhook', async (req, res) => {
   const action = req.body.action;
-
   console.log(`ActionType: ${action.type}`)
+
+  if (action.type === 'updateCard' && action.data.listBefore && action.data.listAfter) {
+
   console.log(`Movendo card: ${action.data.card.name}`);
   console.log(`De: ${action.data.listBefore.name}`);
   console.log(`Para: ${action.data.listAfter.name}`);
-
-  if (action.type === 'updateCard' && action.data.listBefore && action.data.listAfter) {
     const cardName = action.data.card.name;
     const listBefore = action.data.listBefore.name;
     const listAfter = action.data.listAfter.name;
