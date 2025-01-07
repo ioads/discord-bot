@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 app.post('/trello-webhook', async (req, res) => {
   const action = req.body.action;
 
-  if (action.type === 'updateCard') {
+  if (action.type === 'updateCard' && action.data.listBefore && action.data.listAfter) {
     const cardName = action.data.card.name;
     const listBefore = action.data.listBefore.name;
     const listAfter = action.data.listAfter.name;
@@ -34,12 +34,6 @@ app.post('/trello-webhook', async (req, res) => {
     const regexAuthorId = /ID do Autor:\s*(\d+)/;
     const authorIdMatch = card.desc.match(regexAuthorId);
     const authorId = authorIdMatch ? authorIdMatch[1] : null;
-
-    if (authorId) {
-      console.log(`ID do Autor encontrado: ${authorId}`);
-    } else {
-      console.log('ID do Autor não encontrado na descrição.');
-    }
 
     if (listAfter === TRELLO_LIST_NAME_TO_WATCH) {
       const channel = await client.channels.fetch(DISCORD_CHANNEL_ID);
