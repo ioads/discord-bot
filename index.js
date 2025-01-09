@@ -70,15 +70,17 @@ client.on('messageCreate', async message => {
     const authorId = message.author.id;
     const msgContent = message.content.trim();
 
-    const regex = /!chamado\nTITULO:\s*(.*?)\nDESCRICAO:\s*(.*?)\n(?:ID:\s*(.*?)\n)?(?:PRIORIDADE:\s*(.*))?/;
+    const regex = /!chamado\nTITULO:\s*(.*?)\nDESCRICAO:\s*(.*?)\n(?:ID USUARIO:\s*(.*?)\n)?(?:CPF USUARIO:\s*(.*?)\n)?(?:OPERACAO:\s*(.*?)\n)?(?:PRIORIDADE:\s*(.*))?/;
     const matches = regex.exec(msgContent);
 
     if (matches) {
       const dados = {
         titulo: matches[1].trim(),
         descricao: matches[2].trim(),
-        id_cliente_ou_operacao: matches[3] ? matches[3].trim() : null,
-        prioridade: matches[4] ? matches[4].trim() : null
+        id_usuario: matches[3] ? matches[3].trim() : null,
+        cpf_usuario: matches[4] ? matches[4].trim() : null,
+        operacao: matches[5] ? matches[5].trim() : null,
+        prioridade: matches[6] ? matches[6].trim() : null
       };
 
       if (!dados.titulo || !dados.descricao) {
@@ -108,19 +110,15 @@ client.on('messageCreate', async message => {
         url += `&idLabels=${labelPrioridade}`;
       }
 
-      if (dados.id_cliente_ou_operacao) {
-        url += `&desc=${encodeURIComponent(dados.descricao)}%0A%0AID: ${dados.id_cliente_ou_operacao}%0A%0AID do Autor: ${authorId}`;
-      } else {
-        url += `&desc=${encodeURIComponent(dados.descricao)}%0A%0AID do Autor: ${authorId}`;
-      }
-
+      url += `&desc=${encodeURIComponent(dados.descricao)}%0A%0AID USUARIO: ${dados.id_usuario}%0A%0ACPF USUARIO: ${dados.cpf_usuario}%0A%0AOPERACAO: ${dados.operacao}%0A%0AID do Autor: ${authorId}`;
+      
       try {
         const response = await fetch(url, { method: 'POST' });
 
         if (response.ok) {
           const card = await response.json();
 
-          message.channel.send(`Chamado "${dados.titulo}" criado com sucesso!\n\nID do chamado: ${card.id}`);
+          message.channel.send(`Chamado "${dados.titulo}" criado com sucesso!\n\nID do chamado: ${card.id}\nUtilize o comando !status id-do-chamado para consultar o status do seu chamado.`);
 
           for (let i = 0; i < attachmentUrls.length; i++) {
             const imageUrl = attachmentUrls[i];
@@ -141,7 +139,7 @@ client.on('messageCreate', async message => {
         message.channel.send('Ocorreu um erro ao se comunicar com o Trello.');
       }
     } else {
-      message.channel.send('Formato de mensagem incorreto. Use o formato: !chamado\nTITULO:\nDESCRICAO:\nID: ID Cliente (opcional)\nPRIORIDADE: Alta/Media/Baixa (opcional)');
+      message.channel.send('Formato de mensagem incorreto. Use o formato: !chamado\nTITULO: Informe um título para o chamado\nDESCRICAO: Informe aqui a descrição do erro\nID USUARIO: Informe o ID do usuário que está apresentando erro (opcional)\nCPF USUARIO: Informe o CPF do usuário que está apresentando erro (opcional)\nOPERACAO: Betao/7Games/R7 (opcional)\nPRIORIDADE: Alta/Media/Baixa (opcional)');
     }
   } else if (message.content.startsWith('!status')) {
 
@@ -156,6 +154,8 @@ client.on('messageCreate', async message => {
     const list = await responseList.json();
 
     message.channel.send(`O status do chamado de ID ${cardId} é: ${list.name}`);
+  } else if (message.content.startsWith('!help')) {
+    message.channel.send('Olá, sou o TaskBot. Para criar um chamado utilizando meus comandos, basta usar o seguinte formato:\n\n!chamado\nTITULO: Informe um título para o chamado\nDESCRICAO: Informe aqui a descrição do erro\nID USUARIO: Informe o ID do usuário que está apresentando erro (opcional)\nCPF USUARIO: Informe o CPF do usuário que está apresentando erro (opcional)\nOPERACAO: Betao/7Games/R7 (opcional)\nPRIORIDADE: Alta/Media/Baixa (opcional)');
   }
 });
 
