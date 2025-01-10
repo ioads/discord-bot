@@ -39,7 +39,7 @@ app.post('/trello-webhook', async (req, res) => {
       const channel = await client.channels.fetch(DISCORD_CHANNEL_ID);
 
       if (channel) {
-        channel.send(`<@${authorId}>\n\nO card "${cardName}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
+        channel.send(`<@${authorId}>\n\nO card "${cardName}" de ID "${cardId}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
         console.log(`Mensagem enviada para o Discord: O card "${cardName}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
       } else {
         console.error('Canal do Discord não encontrado!');
@@ -154,10 +154,11 @@ client.on('messageCreate', async message => {
     const list = await responseList.json();
 
     message.channel.send(`O status do chamado de ID ${cardId} é: ${list.name}`);
-  } else if (message.content.startsWith('!help')) {
-    message.channel.send('Olá, sou o TaskBot. Para criar um chamado utilizando meus comandos, basta usar o seguinte formato:\n\n!chamado\nTITULO: Informe um título para o chamado\nDESCRICAO: Informe aqui a descrição do erro\nID USUARIO: Informe o ID do usuário que está apresentando erro (opcional)\nCPF USUARIO: Informe o CPF do usuário que está apresentando erro (opcional)\nOPERACAO: Betao/7Games/R7 (opcional)\nPRIORIDADE: Alta/Media/Baixa (opcional)');
+  } else if (message.content.startsWith('!ajuda')) {
+    message.channel.send('Olá, sou o TaskBot. Para criar um chamado utilizando meus comandos, basta usar o seguinte formato:\n\n!chamado\nTITULO: Informe um título para o chamado\nDESCRICAO: Informe aqui a descrição do erro\nID USUARIO: Informe o ID do usuário que está apresentando erro (opcional)\nCPF USUARIO: Informe o CPF do usuário que está apresentando erro (opcional)\nOPERACAO: Betao/7Games/R7 (opcional)\nPRIORIDADE: Alta/Media/Baixa (opcional)\n\nPara inserir imagens, basta adicionar anexos na mesma mensagem que está criando o chamado.');
+  } else if (message.content.startsWith('!comandos')) {
+    message.channel.send('Olá, sou o TaskBot. Os seguintes comandos estão disponíveis para você:\n\n!chamado Para criar uma nova solicitação de correção de bug.\n!status id-do-chamado Para verificar o status do seu chamado aberto.\n!ajuda Para verificar os campos necessários e formato do texto para criação de chamado.');
   }
 });
-
 
 client.login(BOT_DISCORD_TOKEN);
