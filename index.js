@@ -39,7 +39,7 @@ app.post('/trello-webhook', async (req, res) => {
       const channel = await client.channels.fetch(DISCORD_CHANNEL_ID);
 
       if (channel) {
-        channel.send(`<@${authorId}>\n\nO card "${cardName}" de ID "${cardId}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
+        channel.send(`Olá, <@${authorId}>! O card "${cardName}" de ID "${cardId}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
         console.log(`Mensagem enviada para o Discord: O card "${cardName}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
       } else {
         console.error('Canal do Discord não encontrado!');
@@ -55,7 +55,7 @@ app.head('/trello-webhook', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 const DISCORD_CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
-const TRELLO_LIST_NAME_TO_WATCH = 'DONE';
+const TRELLO_LIST_NAME_TO_WATCH = 'CONCLUÍDO';
 
 app.listen(PORT, () => {
   console.log(`Servidor webhook rodando na porta ${PORT}`);
@@ -111,7 +111,7 @@ client.on('messageCreate', async message => {
       }
 
       url += `&desc=${encodeURIComponent(dados.descricao)}%0A%0AID USUARIO: ${dados.id_usuario}%0A%0ACPF USUARIO: ${dados.cpf_usuario}%0A%0AOPERACAO: ${dados.operacao}%0A%0AID do Autor: ${authorId}`;
-      
+    
       try {
         const response = await fetch(url, { method: 'POST' });
 
