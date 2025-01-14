@@ -39,8 +39,8 @@ app.post('/trello-webhook', async (req, res) => {
       const channel = await client.channels.fetch(DISCORD_CHANNEL_ID);
 
       if (channel) {
-        channel.send(`Olá, <@${authorId}>! O card "${cardName}" de ID "${cardId}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
-        console.log(`Mensagem enviada para o Discord: O card "${cardName}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
+        channel.send(`Olá, <@${authorId}>! O chamado "${cardName}" de ID "${cardId}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
+        console.log(`Mensagem enviada para o Discord: O chamado "${cardName}" foi movido da lista "${listBefore}" para a lista "${listAfter}".`);
       } else {
         console.error('Canal do Discord não encontrado!');
       }
